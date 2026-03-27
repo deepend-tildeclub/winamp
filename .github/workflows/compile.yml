@@ -3,9 +3,9 @@ name: compile
 on:
   push:
     branches:
-      - main
-      - master
+      - community
   pull_request:
+      - community
   workflow_dispatch:
 
 jobs:
