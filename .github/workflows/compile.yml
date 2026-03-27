@@ -25,6 +25,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: microsoft/setup-msbuild@v3
+      - name: setup dependencies
+        shell: pwsh
+        run: |
+          choco install -y 7zip nasm strawberryperl
+          $ErrorActionPreference = 'Stop'
+          7z x -y Src/winampAll/libvpx_v1.8.2_msvc16.7z -oSrc
+          7z x -y Src/winampAll/libmpg123.7z -oSrc
+          7z x -y BuildTools/lib/microsoft_directx_sdk_2010.7z -oSrc/external_dependencies
+          7z x -y BuildTools/lib/intel_ipp_6.1.1.035.7z -oSrc/external_dependencies
       - name: build
         shell: pwsh
         run: msbuild winampAll_2019.sln /m /p:Configuration=${{ matrix.configuration }} /p:Platform="${{ matrix.platform }}"
