@@ -24,6 +24,12 @@ jobs:
             platform: x64
     steps:
       - uses: actions/checkout@v6
+      - name: install mfc atl
+        shell: pwsh
+        run: |
+          $vsInstaller = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+          $installPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          & $vsInstaller modify --installPath $installPath --add Microsoft.VisualStudio.Component.VC.ATLMFC --passive --norestart
       - uses: microsoft/setup-msbuild@v3
       - name: setup dependencies
         shell: pwsh
