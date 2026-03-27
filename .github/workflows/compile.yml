@@ -23,8 +23,8 @@ jobs:
           - configuration: Release
             platform: x64
     steps:
-      - uses: actions/checkout@v4
-      - uses: microsoft/setup-msbuild@v2
+      - uses: actions/checkout@v6
+      - uses: microsoft/setup-msbuild@v3
       - name: build
         shell: pwsh
         run: msbuild winampAll_2019.sln /m /p:Configuration=${{ matrix.configuration }} /p:Platform="${{ matrix.platform }}"
