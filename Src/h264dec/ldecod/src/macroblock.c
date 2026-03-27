@@ -1074,7 +1074,7 @@ static void init_macroblock(Macroblock *currMB)
 static void init_macroblock(Macroblock *currMB)
 {
 	VideoParameters *p_Vid = currMB->p_Vid;
-	int i, j;
+	int j;
 	int block_x = currMB->block_x, block_y = currMB->block_y;
 	PicMotionParams *motion = &p_Vid->dec_picture->motion;
 	PicMotion **list_motion0, **list_motion1;
@@ -3877,7 +3877,7 @@ static void readCompCoeff4x4SMB_CABAC(Macroblock *currMB, int context, h264_shor
 		if (rl.level != 0)    /* leave if level == 0 */
 		{
 			pos_scan_4x4 += rl.run;
-			*cbp_blk |= 1 << (block_y + (block_x >> 2)) ;
+			*cbp_blk |= ((int64)1) << (block_y + (block_x >> 2));
 			block[*pos_scan_4x4++] = rl.level;
 			for(k = 0; k < 16; ++k)
 			{

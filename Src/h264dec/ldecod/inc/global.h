@@ -432,14 +432,29 @@ $memcpy_final:
 }
 
 #elif defined(_M_X64)
+static inline void memzero16(void *dst)
+{
+	memset(dst, 0, 16);
+}
+
 static inline void memzero24(void *dst)
 {
-	int32_t j;
-	int32_t *d = (int32_t *)dst;
-	for (j=0;j<24;j+=4)
-	{
-		d[j] = 0;
-	}
+	memset(dst, 0, 24);
+}
+
+static inline void memzero48(void *dst)
+{
+	memset(dst, 0, 48);
+}
+
+static inline void memzero64(void *dst)
+{
+	memset(dst, 0, 64);
+}
+
+static inline void memzero128(void *dst)
+{
+	memset(dst, 0, 128);
 }
 static inline void memset_fast_end() {}
 #else
@@ -1226,5 +1241,4 @@ extern void make_frame_picture_JV(VideoParameters *p_Vid);
 
 
 #endif
-
 

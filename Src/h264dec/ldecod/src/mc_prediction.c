@@ -410,6 +410,7 @@ static inline void bi_prediction(h264_imgpel_macroblock_row_t *mb_pred,
 #endif
 }
 
+#ifdef _M_IX86
 static void bi_prediction4x4_mmx(h264_imgpel_macroblock_row_t *mb_pred, const h264_imgpel_macroblock_t block_l0)
 {
 	int jj;
@@ -419,17 +420,31 @@ static void bi_prediction4x4_mmx(h264_imgpel_macroblock_row_t *mb_pred, const h2
 
 	for(jj = 0;jj < 4;jj++)
 	{
-		b0 = _mm_cvtsi32_si64(*(int *)(&block_l0[jj]));        
+		b0 = _mm_cvtsi32_si64(*(int *)(&block_l0[jj]));
 		b0 = _mm_unpacklo_pi8(b0, mmx_zero);
 		b1 = _mm_cvtsi32_si64(*(int *)(& mb_pred[jj]));
 		b1 = _mm_unpacklo_pi8(b1, mmx_zero);
 		b0 = _mm_add_pi16(b0, b1);
 		b0 = _mm_add_pi16(b0, mmx_one);
 		b0 = _mm_srai_pi16(b0, 1);
-		b0 = _mm_packs_pu16(b0, b0); 
+		b0 = _mm_packs_pu16(b0, b0);
 		*(int *)(&mb_pred[jj]) = _mm_cvtsi64_si32(b0);
 	}
 }
+#else
+static void bi_prediction4x4_mmx(h264_imgpel_macroblock_row_t *mb_pred, const h264_imgpel_macroblock_t block_l0)
+{
+	int ii, jj;
+	for(jj = 0; jj < 4; jj++)
+	{
+		const imgpel *b0 = block_l0[jj];
+		imgpel *row = mb_pred[jj];
+		const imgpel *b1 = row;
+		for(ii = 0; ii < 4; ii++)
+			row[ii] = (imgpel) rshift_rnd_sf((b0[ii] + b1[ii]), 1);
+	}
+}
+#endif
 
 void bi_prediction8x8_sse2(h264_imgpel_macroblock_row_t *mb_pred, const h264_imgpel_macroblock_t block_l0)
 {
@@ -2417,4 +2432,3 @@ void perform_mc16x16(Macroblock *currMB, ColorPlane pl, StorablePicture *dec_pic
 	}
 	}
 }
-

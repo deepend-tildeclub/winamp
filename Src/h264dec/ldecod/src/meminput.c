@@ -86,7 +86,7 @@ int GetMemoryNALU (VideoParameters *p_Vid, NALU_t *nalu)
 	memory_input_t *mem_input = p_Vid->mem_input;
 	if (!mem_input->user_buffer)
 		return 0;
-	nalu->len = mem_input->user_buffer_size;
+	nalu->len = (unsigned int)mem_input->user_buffer_size;
 	memcpy(nalu->buf, mem_input->user_buffer, nalu->len);
 	memzero16(nalu->buf+nalu->len); // add some extra 0's to the end
 	nalu->forbidden_bit     = (*(nalu->buf) >> 7) & 1;
@@ -131,4 +131,3 @@ void CloseMemory(VideoParameters *p_Vid)
 {
     memory_input_t *mem_input = p_Vid->mem_input;
 }
-
