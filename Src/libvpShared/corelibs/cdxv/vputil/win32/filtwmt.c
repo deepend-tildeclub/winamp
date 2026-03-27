@@ -1,3 +1,20 @@
+#if !defined(_M_IX86)
+
+extern void FilterBlockBil_8_C( UINT8 *ReconPtr1, UINT8 *ReconPtr2, UINT8 *ReconRefPtr, UINT32 ReconPixelsPerLine, INT32 ModX, INT32 ModY );
+extern void FilterBlock_C( UINT8 *ReconPtr1, UINT8 *ReconPtr2, UINT16 *ReconRefPtr, UINT32 PixelsPerLine, INT32 ModX, INT32 ModY, BOOL UseBicubic, UINT8 BicubicAlpha );
+
+void FilterBlockBil_8_wmt( UINT8 *ReconPtr1, UINT8 *ReconPtr2, UINT8 *ReconRefPtr, UINT32 ReconPixelsPerLine, INT32 ModX, INT32 ModY )
+{
+    FilterBlockBil_8_C(ReconPtr1, ReconPtr2, ReconRefPtr, ReconPixelsPerLine, ModX, ModY);
+}
+
+void FilterBlock_wmt( UINT8 *ReconPtr1, UINT8 *ReconPtr2, UINT16 *ReconRefPtr, UINT32 PixelsPerLine, INT32 ModX, INT32 ModY, BOOL UseBicubic, UINT8 BicubicAlpha )
+{
+    FilterBlock_C(ReconPtr1, ReconPtr2, ReconRefPtr, PixelsPerLine, ModX, ModY, UseBicubic, BicubicAlpha);
+}
+
+#else
+
 /****************************************************************************
  *
  *   Module Title :     newLoopTest_asm.c 
@@ -788,3 +805,5 @@ void FilterBlock_wmt( UINT8 *ReconPtr1, UINT8 *ReconPtr2, UINT16 *ReconRefPtr, U
     }
 }
 
+
+#endif

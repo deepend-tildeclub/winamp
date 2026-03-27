@@ -1,3 +1,14 @@
+#if !defined(_M_IX86)
+
+extern void fdct_short_C ( INT16 * InputData, INT16 * OutputData );
+
+void  fdct_WMT(short *InputData, short *OutputData)
+{
+    fdct_short_C(InputData, OutputData);
+}
+
+#else
+
 /****************************************************************************
  *
  *   Module Title :     Fdctwmt.c
@@ -808,3 +819,5 @@ void  fdct_WMT(short *InputData, short *OutputData)
 
 
 
+
+#endif
