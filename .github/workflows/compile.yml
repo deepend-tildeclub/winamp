@@ -1,0 +1,31 @@
+name: compile
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - configuration: Debug
+            platform: Win32
+          - configuration: Release
+            platform: Win32
+          - configuration: Debug
+            platform: x64
+          - configuration: Release
+            platform: x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: build
+        shell: pwsh
+        run: msbuild winampAll_2019.sln /m /p:Configuration=${{ matrix.configuration }} /p:Platform="${{ matrix.platform }}"
