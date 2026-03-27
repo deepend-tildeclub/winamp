@@ -367,6 +367,7 @@ void EdgeLoopChromaNormal_Horiz(VideoImage *image, const byte Strength[16], Macr
 }
 
 
+#ifdef _M_IX86
 static void FilterChroma8_Horiz_sse(int p_step, imgpel *SrcPtrP, int Alpha, int Beta, const uint8_t Strength[4], const char *ClipTab)
 {
 	__m64 mmx_alpha_minus_one = _mm_set1_pi16(Alpha-1), mmx_beta_minus_one = _mm_set1_pi16(Beta-1);
@@ -485,9 +486,10 @@ SrcPtrP += 4;
 		if (i++ == 1)
 			return;
 
-		SrcPtrP += 4;
-		goto STAGE; // next stage
+	SrcPtrP += 4;
+	goto STAGE; // next stage
 }
+#endif
 
 
 void EdgeLoopChroma_Horiz_YUV420(VideoImage *image, const byte strength[4], Macroblock *MbQ, int uv, PixelPos pixMB, Macroblock *MbP)
@@ -523,11 +525,40 @@ void EdgeLoopChroma_Horiz_YUV420(VideoImage *image, const byte strength[4], Macr
 			{
 				IntraStrongFilter_Chroma8_Horiz_YUV420_sse2(inc_dim, SrcPtrP,   Alpha, Beta);
 			}
-			else
-			{
-				const     byte *ClipTab = CLIP_TAB[indexA];
-				FilterChroma8_Horiz_sse(inc_dim, SrcPtrP, Alpha, Beta, strength, ClipTab);
+				else
+				{
+					const     byte *ClipTab = CLIP_TAB[indexA];
+#ifdef _M_IX86
+					FilterChroma8_Horiz_sse(inc_dim, SrcPtrP, Alpha, Beta, strength, ClipTab);
+#else
+					int i;
+					for (i = 0; i < 8; ++i)
+					{
+						if (strength[i >> 1] != 0)
+						{
+							imgpel *SrcPtrQ = SrcPtrP + inc_dim;
+							imgpel L0 = *SrcPtrP;
+							imgpel R0 = *SrcPtrQ;
+							if (abs(R0 - L0) < Alpha)
+							{
+								imgpel R1 = *(SrcPtrQ + inc_dim);
+								if (abs(R0 - R1) < Beta)
+								{
+									imgpel L1 = *(SrcPtrP - inc_dim);
+									if (abs(L0 - L1) < Beta)
+									{
+										int tc0 = ClipTab[strength[i >> 1]] + 1;
+										int dif = iClip3(-tc0, tc0, (((R0 - L0) << 2) + (L1 - R1) + 4) >> 3);
+										*SrcPtrP = (imgpel)iClip1(255, L0 + dif);
+										*SrcPtrQ = (imgpel)iClip1(255, R0 - dif);
+									}
+								}
+							}
+						}
+						++SrcPtrP;
+					}
+#endif
+				}
 			}
 		}
-	}
 }

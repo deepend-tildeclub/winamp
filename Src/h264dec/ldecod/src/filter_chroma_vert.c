@@ -103,6 +103,7 @@ void EdgeLoopChromaNormal_Vert(VideoImage *image, const byte Strength[16], Macro
 	}
 }
 
+#ifdef _M_IX86
 static void FilterStrongChroma_Vert_sse(int p_step, imgpel *SrcPtrP, int Alpha, int Beta)
 {
 	__m64 mmx_alpha_minus_one = _mm_set1_pi16(Alpha-1), mmx_beta_minus_one = _mm_set1_pi16(Beta-1);
@@ -380,9 +381,10 @@ static void FilterChroma_Vert_sse(int p_step, imgpel *SrcPtrP, int Alpha, int Be
 		if (i++ == 1)
 			return;
 
-		SrcPtrP += p_step;
-		goto STAGE; // next stage
+	SrcPtrP += p_step;
+	goto STAGE; // next stage
 }
+#endif
 
 static void FilterStrongChroma_Vert_c(int p_step, imgpel *SrcPtrP, int Alpha, int Beta)
 {
@@ -467,16 +469,24 @@ void EdgeLoopChroma_Vert_YUV420(VideoImage *image, const uint8_t Strength[4], Ma
 				const int stride = image->stride;
 				imgpel *SrcPtrP = &(Img[pixMB1.pos_y >> 1][pixMB1.pos_x >> 1]);
 		
-				if (Strength[0] == 4)
-				{
-					FilterStrongChroma_Vert_sse(stride, SrcPtrP, Alpha, Beta);
-				}
-				else
-				{
-					FilterChroma_Vert_sse(stride, SrcPtrP, Alpha, Beta, Strength, ClipTab);
+					if (Strength[0] == 4)
+					{
+#ifdef _M_IX86
+						FilterStrongChroma_Vert_sse(stride, SrcPtrP, Alpha, Beta);
+#else
+						FilterStrongChroma_Vert_c(stride, SrcPtrP, Alpha, Beta);
+#endif
+					}
+					else
+					{
+#ifdef _M_IX86
+						FilterChroma_Vert_sse(stride, SrcPtrP, Alpha, Beta, Strength, ClipTab);
+#else
+						FilterChroma_Vert_c(stride, SrcPtrP, Alpha, Beta, Strength, ClipTab);
+#endif
+					}
 				}
 			}
-		}
 	}
 }
 

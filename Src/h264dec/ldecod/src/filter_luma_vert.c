@@ -176,6 +176,7 @@ void EdgeLoopLumaNormal_Vert(ColorPlane pl, VideoImage *image, const byte Streng
 }
 
 
+#ifdef _M_IX86
 static void FilterLuma_Vert_sse2(int p_step, imgpel *SrcPtrP, int Alpha, int Beta, const uint8_t Strength[4], const byte *ClipTab)
 {
 
@@ -385,9 +386,10 @@ static void FilterLuma_Vert_sse2(int p_step, imgpel *SrcPtrP, int Alpha, int Bet
 		//SrcPtrQ += 2;
 		SrcPtrP += p_step;
 		//SrcPtrQ += p_step;
-		SrcPtrP--;
-		goto STAGE; // next stage
+	SrcPtrP--;
+	goto STAGE; // next stage
 }
+#endif
 
 /* assumptions: YUV 420, getNonAffNeighbour */
 void EdgeLoopLuma_Vert_YUV420(VideoImage *image, const uint8_t Strength[4], Macroblock *MbQ, PixelPos pixMB1, Macroblock *MbP)
@@ -421,13 +423,28 @@ void EdgeLoopLuma_Vert_YUV420(VideoImage *image, const uint8_t Strength[4], Macr
 					SrcPtrQ += p_step * BLOCK_SIZE;
 				}
 			}
-			else
-			{
-				const byte *ClipTab = CLIP_TAB   [indexA];
-				FilterLuma_Vert_sse2(p_step, SrcPtrP, Alpha, Beta, Strength, ClipTab);
+				else
+				{
+					const byte *ClipTab = CLIP_TAB   [indexA];
+#ifdef _M_IX86
+					FilterLuma_Vert_sse2(p_step, SrcPtrP, Alpha, Beta, Strength, ClipTab);
+#else
+					int i;
+					imgpel *SrcPtrQ = SrcPtrP + 1;
+					for (i = 0; i < BLOCK_SIZE; ++i)
+					{
+						if (Strength[i] != 0)
+						{
+							int C0 = ClipTab[Strength[i]];
+							FilterLuma_Vert(p_step, SrcPtrP, SrcPtrQ, Alpha, Beta, C0, 255);
+						}
+						SrcPtrP += p_step * BLOCK_SIZE;
+						SrcPtrQ += p_step * BLOCK_SIZE;
+					}
+#endif
+				}
 			}
 		}
-	}
 }
 
 void EdgeLoopLumaMBAff_Vert_YUV420(VideoImage *image, const byte Strength[16], Macroblock *MbQ, int edge, StorablePicture *p)
