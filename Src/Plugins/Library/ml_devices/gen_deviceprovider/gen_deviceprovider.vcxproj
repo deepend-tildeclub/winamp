@@ -271,7 +271,6 @@ xcopy /Y /D $(IntDir)$(TargetName).pdb ..\..\..\..\..\Build\Winamp_$(PlatformSho
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\nu\PtrList.cpp" />
     <ClCompile Include="..\..\..\..\nu\trace.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="deviceActivity.cpp" />

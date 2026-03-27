@@ -103,7 +103,7 @@ IconStore_RemovePath(IconStore *self, const wchar_t *path)
 		record = &self->list[index];
 		if(CSTR_EQUAL == CompareString(CSTR_INVARIANT, NORM_IGNORECASE, record->path, -1, path, -1))
 		{
-			self->list.eraseAt(index);
+			self->list.erase(self->list.begin() + index);
 		}
 	}
 
@@ -126,7 +126,7 @@ IconStore_Remove(IconStore *self, unsigned int width, unsigned int height)
 		if(record->width == width &&
 			record->height == height)
 		{
-			self->list.eraseAt(index);
+			self->list.erase(self->list.begin() + index);
 		}
 	}
 

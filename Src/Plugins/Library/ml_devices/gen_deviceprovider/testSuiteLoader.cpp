@@ -56,7 +56,6 @@ LoaderTag_Connect(TestSuiteLoader *loader, const wchar_t *value)
 		}
 		cursor++;
 	}
- //loader->SetImageBase(value);
 }
 
 
@@ -129,7 +128,7 @@ BOOL TestSuiteLoader::Load(const wchar_t *path, TestSuite *testSuite)
 				reader->xmlreader_close();
 		
 				testSuite->SetIconBase(imageBase);
-				testSuite->SetConnectList(connectList.begin(), connectList.size());
+				testSuite->SetConnectList(connectList.data(), connectList.size());
 
 			}
 			sf->releaseInterface(reader);

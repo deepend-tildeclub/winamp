@@ -285,7 +285,7 @@ BOOL TestSuite::RegisterTypes(api_devicemanager *manager)
 		return FALSE;
 
 	if (0 != typeList.size())
-		manager->TypeRegister((ifc_devicetype**)typeList.begin(), typeList.size());
+		manager->TypeRegister(typeList.data(), typeList.size());
 
 	return TRUE;
 }
@@ -486,7 +486,7 @@ BOOL TestSuite::RegisterConnections(api_devicemanager *manager)
 		return FALSE;
 
 	if (0 != connectionList.size())
-		manager->ConnectionRegister((ifc_deviceconnection**)connectionList.begin(), connectionList.size());
+		manager->ConnectionRegister(connectionList.data(), connectionList.size());
 
 	return TRUE;
 }
@@ -534,7 +534,7 @@ BOOL TestSuite::RegisterCommands(api_devicemanager *manager)
 		return FALSE;
 
 	if (0 != commandList.size())
-		manager->CommandRegister((ifc_devicecommand**)commandList.begin(), commandList.size());
+		manager->CommandRegister(commandList.data(), commandList.size());
 
 	return TRUE;
 }
